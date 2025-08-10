@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CYCU AI Smart Calendar - 智能行事曆</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1><i class="fas fa-calendar-alt"></i>CYCU AI Smart Calendar</h1>
+      <p>Organize your life with AI-powered planning and analytics</p>
+    </header>
+
+    <!-- Auto-Display Countdown Section -->
+    <section class="auto-countdown-section" id="auto-countdown-section">
+      <div class="container">
+        <div class="countdown-header">
+          <h2><i class="fas fa-clock"></i> Important Deadlines</h2>
+          <div class="countdown-controls">
+            <button id="toggle-countdown-btn" class="btn btn-sm btn-outline">
+              <i class="fas fa-eye"></i> Show/Hide
+            </button>
+            <button id="refresh-auto-countdown-btn" class="btn btn-sm btn-primary">
+              <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+          </div>
+        </div>
+        <div class="auto-countdown-display" id="auto-countdown-display">
+          <!-- Auto countdown content will be populated here -->
+        </div>
+      </div>
+    </section>
+
+    <main class="main-content">
+      <!-- Calendar Section -->
+      <section class="calendar-section">
+        <div class="calendar-header">
+          <button id="prev-month" class="nav-btn"><i class="fas fa-chevron-left"></i></button>
+          <h2 id="current-month">December 2024</h2>
+          <button id="next-month" class="nav-btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        
+        <div class="calendar-grid">
+          <div class="calendar-weekdays">
+            <div class="weekday">Sun</div>
+            <div class="weekday">Mon</div>
+            <div class="weekday">Tue</div>
+            <div class="weekday">Wed</div>
+            <div class="weekday">Thu</div>
+            <div class="weekday">Fri</div>
+            <div class="weekday">Sat</div>
+          </div>
+          <div id="calendar-days" class="calendar-days"></div>
+        </div>
+      </section>
+
+      <!-- Notes Panel -->
+      <section class="notes-panel">
+        <div class="panel-header">
+          <h3><i class="fas fa-sticky-note"></i> Notes for <span id="selected-date">Select a date</span></h3>
+        </div>
+        
+        <div class="notes-content">
+          <div id="notes-list" class="notes-list"></div>
+          
+          <div class="add-note-section">
+            <textarea id="new-note-content" placeholder="Add a new note or event..." rows="3"></textarea>
+            <button id="add-note-btn" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Add Note
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- AI Features Section -->
+    <section class="ai-features">
+      <div class="feature-tabs">
+        <button class="tab-btn active" data-tab="planning">
+          <i class="fas fa-magic"></i> AI Planning
+        </button>
+        <button class="tab-btn" data-tab="qa">
+          <i class="fas fa-question-circle"></i> AI Q&A
+        </button>
+        <button class="tab-btn" data-tab="bulk-delete">
+          <i class="fas fa-trash-alt"></i> Bulk Delete
+        </button>
+        <button class="tab-btn" data-tab="labels">
+          <i class="fas fa-tags"></i> Date Labels
+        </button>
+        <button class="tab-btn" data-tab="countdown">
+          <i class="fas fa-clock"></i> Countdown
+        </button>
+        <button class="tab-btn" data-tab="analytics">
+          <i class="fas fa-chart-pie"></i> Time Analytics
+        </button>
+      </div>
+
+      <!-- AI Planning Tab -->
+      <div id="planning-tab" class="tab-content active">
+        <div class="ai-panel">
+          <h3><i class="fas fa-robot"></i> Generate Weekly Plan</h3>
+          <p class="ai-description">Describe your goal and let AI create a detailed weekly schedule for you.</p>
+          
+          <div class="input-group">
+            <textarea id="planning-goal" placeholder="Enter your planning goal, e.g., 'weekly fitness and study schedule', 'prepare for final exams', 'work-life balance routine'..." rows="3"></textarea>
+            <button id="generate-plan-btn" class="btn btn-ai">
+              <i class="fas fa-magic"></i> Generate Plan
+            </button>
+          </div>
+          
+          <div id="plan-result" class="result-display"></div>
+        </div>
+      </div>
+
+      <!-- AI Q&A Tab -->
+      <div id="qa-tab" class="tab-content">
+        <div class="ai-panel">
+          <h3><i class="fas fa-comments"></i> Ask AI About Your Schedule</h3>
+          <p class="ai-description">Ask questions about your existing schedule and get personalized advice.</p>
+          
+          <div class="input-group">
+            <textarea id="ai-question" placeholder="Ask about your schedule, e.g., 'When do I have free time this week?', 'What's my busiest day?', 'Suggest a better time for exercise'..." rows="3"></textarea>
+            <button id="ask-ai-btn" class="btn btn-ai">
+              <i class="fas fa-paper-plane"></i> Ask AI
+            </button>
+          </div>
+          
+          <div id="ai-answer" class="result-display"></div>
+        </div>
+      </div>
+
+      <!-- Bulk Delete Tab -->
+      <div id="bulk-delete-tab" class="tab-content">
+        <div class="ai-panel">
+          <h3><i class="fas fa-trash-alt"></i> Bulk Schedule Deletion</h3>
+          <p class="ai-description">Delete schedules for specific days, date ranges, weeks, or months.</p>
+          
+          <div class="delete-options">
+            <!-- Single Date Delete -->
+            <div class="delete-option">
+              <h4><i class="fas fa-calendar-day"></i> Delete Single Date</h4>
+              <div class="input-group">
+                <input type="date" id="single-date-input" class="date-input">
+                <button id="delete-single-date-btn" class="btn btn-danger">
+                  <i class="fas fa-trash"></i> Delete Date
+                </button>
+              </div>
+            </div>
+
+            <!-- Date Range Delete -->
+            <div class="delete-option">
+              <h4><i class="fas fa-calendar-week"></i> Delete Date Range</h4>
+              <div class="input-group">
+                <div class="date-range-inputs">
+                  <input type="date" id="start-date-input" class="date-input" placeholder="Start Date">
+                  <span class="date-separator">to</span>
+                  <input type="date" id="end-date-input" class="date-input" placeholder="End Date">
+                </div>
+                <button id="delete-date-range-btn" class="btn btn-danger">
+                  <i class="fas fa-trash"></i> Delete Range
+                </button>
+              </div>
+            </div>
+
+            <!-- Week Delete -->
+            <div class="delete-option">
+              <h4><i class="fas fa-calendar-week"></i> Delete Current Week</h4>
+              <div class="input-group">
+                <button id="delete-current-week-btn" class="btn btn-danger">
+                  <i class="fas fa-trash"></i> Delete Current Week
+                </button>
+                <span class="week-info" id="current-week-info"></span>
+              </div>
+            </div>
+
+            <!-- Month Delete -->
+            <div class="delete-option">
+              <h4><i class="fas fa-calendar-alt"></i> Delete Month</h4>
+              <div class="input-group">
+                <select id="month-select" class="month-select">
+                  <option value="1">January</option>
+                  <option value="2">February</option>
+                  <option value="3">March</option>
+                  <option value="4">April</option>
+                  <option value="5">May</option>
+                  <option value="6">June</option>
+                  <option value="7">July</option>
+                  <option value="8">August</option>
+                  <option value="9">September</option>
+                  <option value="10">October</option>
+                  <option value="11">November</option>
+                  <option value="12">December</option>
+                </select>
+                <input type="number" id="year-input" class="year-input" placeholder="Year" min="2020" max="2030">
+                <button id="delete-month-btn" class="btn btn-danger">
+                  <i class="fas fa-trash"></i> Delete Month
+                </button>
+              </div>
+            </div>
+
+            <!-- Multiple Dates Delete -->
+            <div class="delete-option">
+              <h4><i class="fas fa-calendar-check"></i> Delete Multiple Specific Dates</h4>
+              <div class="input-group">
+                <textarea id="multiple-dates-input" placeholder="Enter dates separated by commas (YYYY-MM-DD format), e.g., 2024-12-20, 2024-12-25, 2024-12-31" rows="3"></textarea>
+                <button id="delete-multiple-dates-btn" class="btn btn-danger">
+                  <i class="fas fa-trash"></i> Delete Selected Dates
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div id="delete-result" class="result-display"></div>
+        </div>
+      </div>
+
+      <!-- Date Labels Tab -->
+      <div id="labels-tab" class="tab-content">
+        <div class="ai-panel">
+          <h3><i class="fas fa-tags"></i> Date Labels & Colors</h3>
+          <p class="ai-description">Mark important dates with custom labels and colors for exams, deadlines, events, etc.</p>
+          
+          <div class="labels-section">
+            <!-- Add/Edit Label -->
+            <div class="label-form">
+              <h4><i class="fas fa-plus"></i> Add/Edit Label</h4>
+              <div class="input-group">
+                <input type="date" id="label-date-input" class="date-input" placeholder="Select Date">
+                <input type="text" id="label-text-input" class="label-input" placeholder="Enter label (e.g., Final Exam, Assignment Due, School Event)">
+                <div class="color-picker-container">
+                  <input type="color" id="label-color-input" class="color-input" value="#ff6b6b">
+                  <span class="color-label">Color</span>
+                </div>
+                <div class="label-actions">
+                  <button id="save-label-btn" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Label
+                  </button>
+                  <button id="update-label-btn" class="btn btn-secondary" style="display: none;">
+                    <i class="fas fa-edit"></i> Update Label
+                  </button>
+                  <button id="clear-label-form-btn" class="btn btn-outline">
+                    <i class="fas fa-times"></i> Clear
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Label Templates -->
+            <div class="label-templates">
+              <h4><i class="fas fa-lightning-bolt"></i> Quick Templates</h4>
+              <div class="template-buttons">
+                <button class="template-btn" data-label="Final Exam" data-color="#dc3545">
+                  <i class="fas fa-graduation-cap"></i> Final Exam
+                </button>
+                <button class="template-btn" data-label="Assignment Due" data-color="#fd7e14">
+                  <i class="fas fa-file-alt"></i> Assignment Due
+                </button>
+                <button class="template-btn" data-label="Project Deadline" data-color="#e83e8c">
+                  <i class="fas fa-project-diagram"></i> Project Deadline
+                </button>
+                <button class="template-btn" data-label="School Event" data-color="#6f42c1">
+                  <i class="fas fa-calendar-event"></i> School Event
+                </button>
+                <button class="template-btn" data-label="Study Session" data-color="#20c997">
+                  <i class="fas fa-book"></i> Study Session
+                </button>
+                <button class="template-btn" data-label="Meeting" data-color="#17a2b8">
+                  <i class="fas fa-users"></i> Meeting
+                </button>
+              </div>
+            </div>
+
+            <!-- Current Labels -->
+            <div class="current-labels">
+              <h4><i class="fas fa-list"></i> Current Labels</h4>
+              <div id="labels-list" class="labels-list">
+                <!-- Labels will be populated here -->
+              </div>
+            </div>
+          </div>
+          
+          <div id="label-result" class="result-display"></div>
+        </div>
+      </div>
+
+      <!-- Countdown Tab -->
+      <div id="countdown-tab" class="tab-content">
+        <div class="ai-panel">
+          <h3><i class="fas fa-clock"></i> Important Deadlines Countdown</h3>
+          <p class="ai-description">Track important events and deadlines with visual countdown timers. Stay on top of your priorities!</p>
+          
+          <div class="countdown-section">
+            <!-- Countdown Controls -->
+            <div class="countdown-controls">
+              <button id="refresh-countdowns-btn" class="btn btn-primary">
+                <i class="fas fa-sync-alt"></i> Refresh Countdowns
+              </button>
+              <button id="auto-refresh-toggle" class="btn btn-secondary">
+                <i class="fas fa-play"></i> Auto Refresh
+              </button>
+              <button id="export-countdowns-btn" class="btn btn-outline">
+                <i class="fas fa-download"></i> Export List
+              </button>
+            </div>
+
+            <!-- Countdown Statistics -->
+            <div class="countdown-stats" id="countdown-stats">
+              <!-- Stats will be populated here -->
+            </div>
+
+            <!-- Priority Overview -->
+            <div class="priority-overview">
+              <h4><i class="fas fa-exclamation-triangle"></i> Priority Overview</h4>
+              <div class="priority-cards" id="priority-cards">
+                <!-- Priority cards will be populated here -->
+              </div>
+            </div>
+
+            <!-- Countdown List -->
+            <div class="countdown-list-container">
+              <h4><i class="fas fa-list"></i> Upcoming Deadlines</h4>
+              <div class="countdown-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="critical">Critical</button>
+                <button class="filter-btn" data-filter="urgent">Urgent</button>
+                <button class="filter-btn" data-filter="high">High</button>
+                <button class="filter-btn" data-filter="medium">Medium</button>
+                <button class="filter-btn" data-filter="low">Low</button>
+              </div>
+              <div id="countdown-list" class="countdown-list">
+                <!-- Countdown items will be populated here -->
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+              <h4><i class="fas fa-bolt"></i> Quick Actions</h4>
+              <div class="action-buttons">
+                <button id="mark-important-btn" class="btn btn-danger">
+                  <i class="fas fa-star"></i> Mark as Important
+                </button>
+                <button id="add-reminder-btn" class="btn btn-warning">
+                  <i class="fas fa-bell"></i> Add Reminder
+                </button>
+                <button id="schedule-prep-btn" class="btn btn-info">
+                  <i class="fas fa-calendar-plus"></i> Schedule Prep Time
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div id="countdown-result" class="result-display"></div>
+        </div>
+      </div>
+
+      <!-- Time Analytics Tab -->
+      <div id="analytics-tab" class="tab-content">
+        <div class="ai-panel">
+          <h3><i class="fas fa-chart-pie"></i> AI-Powered Activity Analysis</h3>
+          <p class="ai-description">AI automatically categorizes your activities as Study, Exercise, or Rest and assigns intensity scales.</p>
+          
+          <div class="analytics-section">
+            <!-- Analysis Controls -->
+            <div class="analytics-controls">
+              <button id="analyze-time-btn" class="btn btn-primary">
+                <i class="fas fa-brain"></i> AI Analyze Activities
+              </button>
+              <button id="show-trends-btn" class="btn btn-secondary">
+                <i class="fas fa-chart-line"></i> Show Trends
+              </button>
+              <button id="export-data-btn" class="btn btn-outline">
+                <i class="fas fa-download"></i> Export Data
+              </button>
+            </div>
+
+            <!-- Summary Stats -->
+            <div class="summary-stats" id="summary-stats">
+              <!-- Stats will be populated here -->
+            </div>
+
+            <!-- Category Scale Charts -->
+            <div class="scale-charts-container">
+              <h4><i class="fas fa-chart-bar"></i> Activity Intensity Scales</h4>
+              <div class="scale-charts">
+                <div class="scale-chart" id="study-scale">
+                  <h5>📚 Study Intensity</h5>
+                  <div class="scale-meter"></div>
+                </div>
+                <div class="scale-chart" id="exercise-scale">
+                  <h5>💪 Exercise Intensity</h5>
+                  <div class="scale-meter"></div>
+                </div>
+                <div class="scale-chart" id="rest-scale">
+                  <h5>😴 Rest Quality</h5>
+                  <div class="scale-meter"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bar Chart -->
+            <div class="chart-container">
+              <h4><i class="fas fa-chart-bar"></i> Activity Breakdown with Intensity</h4>
+              <div id="bar-chart" class="bar-chart">
+                <!-- Chart will be rendered here -->
+              </div>
+            </div>
+
+            <!-- Weekly Analysis -->
+            <div class="chart-container">
+              <h4><i class="fas fa-calendar-week"></i> This Week's Activity Intensity</h4>
+              <div id="weekly-chart" class="weekly-chart">
+                <!-- Chart will be rendered here -->
+              </div>
+            </div>
+
+            <!-- AI Categorization Details -->
+            <div class="ai-categorization-details">
+              <h4><i class="fas fa-robot"></i> AI Categorization Results</h4>
+              <div id="ai-categorization-results" class="categorization-results">
+                <!-- AI categorization details will be populated here -->
+              </div>
+            </div>
+
+            <!-- Activity Details -->
+            <div class="activity-details">
+              <h4><i class="fas fa-list"></i> Categorized Activities</h4>
+              <div id="activity-details" class="details-list">
+                <!-- Details will be populated here -->
+              </div>
+            </div>
+
+            <!-- Insights -->
+            <div class="insights-section">
+              <h4><i class="fas fa-lightbulb"></i> AI Insights & Recommendations</h4>
+              <div id="ai-insights" class="insights-content">
+                <!-- AI insights will be generated here -->
+              </div>
+            </div>
+          </div>
+          
+          <div id="analytics-result" class="result-display"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Week View -->
+    <section class="quick-week">
+      <h3><i class="fas fa-calendar-week"></i> This Week's Overview</h3>
+      <div id="week-overview" class="week-overview"></div>
+    </section>
+  </div>
+
+  <!-- Modal for editing notes -->
+  <div id="note-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit Note</h3>
+        <span class="close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <textarea id="edit-note-content" rows="4"></textarea>
+        <div class="modal-actions">
+          <button id="save-note-btn" class="btn btn-primary">Save</button>
+          <button id="cancel-edit-btn" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
