@@ -17,7 +17,7 @@ NOTES_FILE = "notes.json"
 LABELS_FILE = "labels.json"
 
 # Configure Gemini API
-genai.configure(api_key="certified")
+genai.configure(api_key="classified")
 
 def load_notes():
     """Load notes from JSON file with error handling"""
